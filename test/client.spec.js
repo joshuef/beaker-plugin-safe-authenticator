@@ -483,7 +483,7 @@ describe('Client', () => {
     );
   });
 
-  //HEREEEE
+  // HEREEEE
   describe('get authorised apps', () => {
     const prepareReq = () => new Promise((resolve, reject) => {
       const authL = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ,
@@ -648,19 +648,19 @@ describe('Client', () => {
   describe('account information', () => {
     before(() => new Promise(
       (resolve, reject) => {
-		  console.log("AND HERE WE ARE BEFORE PROMISE");
+        console.log('AND HERE WE ARE BEFORE PROMISE');
         const authL = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, req) => (
           client.encodeAuthResp(req, true).then(() => {
             client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authL);
 
-			console.log("AND HERE WE ARE LISTENING AND RESOLVING");
+            console.log('AND HERE WE ARE LISTENING AND RESOLVING');
             resolve();
           })
         ));
 
         const errL = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, () => {
           client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errL);
-		  console.log("AND HERE WE ARE LISTENING AND REJECTING");
+          console.log('AND HERE WE ARE LISTENING AND REJECTING');
           reject();
         });
 

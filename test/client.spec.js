@@ -476,7 +476,6 @@ describe('Client', () => {
       .should.be.fulfilled()
       .then((res) => should(res).not.be.empty().and.be.String())
     );
-
     it('returns encoded response URI on success of allow', () => prepareReq()
       .then(() => client.encodeContainersResp(decodedReq, true))
       .should.be.fulfilled()
@@ -484,6 +483,7 @@ describe('Client', () => {
     );
   });
 
+  //HEREEEE
   describe('get authorised apps', () => {
     const prepareReq = () => new Promise((resolve, reject) => {
       const authL = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ,
@@ -648,15 +648,19 @@ describe('Client', () => {
   describe('account information', () => {
     before(() => new Promise(
       (resolve, reject) => {
+		  console.log("AND HERE WE ARE BEFORE PROMISE");
         const authL = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, req) => (
           client.encodeAuthResp(req, true).then(() => {
             client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authL);
+
+			console.log("AND HERE WE ARE LISTENING AND RESOLVING");
             resolve();
           })
         ));
 
         const errL = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, () => {
           client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errL);
+		  console.log("AND HERE WE ARE LISTENING AND REJECTING");
           reject();
         });
 

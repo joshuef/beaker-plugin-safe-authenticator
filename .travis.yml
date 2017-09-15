@@ -25,18 +25,19 @@ addons:
       - xdg-utils
 
 cache:
+  yarn: true
   directories:
-    - node_modules
-
+  - node_modules
+  - $HOME/.cache
 before_install:
   - "[[ ${TRAVIS_OS_NAME} = linux ]] && export CXX=g++-4.8 || echo 'skipped'"
 
 install:
   - node --version
-  - npm --version
+  - yarn --version
   # also downloads the build for release version
-  - NODE_ENV=test npm install
+  - NODE_ENV=test yarn install
 
 script:
-  - npm run lint
-  - npm test
+  - yarn run lint
+  - yarn test

@@ -187,91 +187,91 @@ describe('Client', () => {
   });
   //
   describe('decrypt request', () => {
-    before(() => helper.createRandomAccount());
-
-    after(() => helper.clearAccount());
-
-    it('throws an error when encoded URI is empty', () =>
-      client.decodeRequest().should.be.rejected()
-    );
-
-    it('throws an error for container request of unknown app', () => (
-      new Promise((resolve, reject) => {
-        const contListener = client.setListener(CONST.LISTENER_TYPES.CONTAINER_REQ, (err, res) => {
-          client.removeListener(CONST.LISTENER_TYPES.CONTAINER_REQ, contListener);
-          reject(res);
-        });
-
-        const errListener = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
-          should(err).not.be.empty().and.be.String();
-          client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errListener);
-          resolve(err);
-        });
-        client.decodeRequest(encodedContUri);
-      })
-    ));
-
-    it('throws an error for invalid URI', () => (
-      new Promise((resolve, reject) => {
-        const authListener = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, res) => {
-          client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authListener);
-          reject(res);
-        });
-
-        const errListener = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
-          client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errListener);
-          resolve(err);
-        });
-
-        client.decodeRequest(`safe-auth:${crypto.randomBytes(32).toString('base64')}`);
-      })
-    ));
-
-    it('returns a decoded request for encoded Auth request', () => (
-      new Promise((resolve, reject) => {
-        const authListener = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, res) => {
-          should(res).not.be.undefined().and.be.Object().and.not.empty().and.have.properties(['reqId', 'authReq']);
-          should(res.reqId).not.be.undefined().and.be.Number();
-          should(res.authReq).be.Object().and.not.empty().and.have.properties([
-            'app',
-            'app_container',
-            'containers',
-            'containers_len',
-            'containers_cap']);
-          should(res.authReq.app).be.Object().and.not.empty().and.have.properties([
-            'id',
-            'scope',
-            'name',
-            'vendor']);
-          should(res.authReq.app.id).not.be.undefined().and.not.be.empty().and.be.String();
-          should(res.authReq.app.name).not.be.undefined().and.not.be.empty().and.be.String();
-          should(res.authReq.app.vendor).not.be.undefined().and.not.be.empty().and.be.String();
-          should(res.authReq.app_container).not.be.undefined().and.be.Boolean();
-          should(res.authReq.containers).not.be.undefined().and.be.Array();
-          should(res.authReq.containers_len).not.be.undefined().and.be.Number();
-          should(res.authReq.containers_cap).not.be.undefined().and.be.Number();
-
-          if (res.authReq.containers_len > 0) {
-            const container0 = res.authReq.containers[0];
-            should(container0).be.Object().and.not.empty().and.have.properties([
-              'cont_name',
-              'access'
-            ]);
-            should(container0.cont_name).not.be.undefined().and.not.be.empty().and.be.String();
-            should(container0.access).not.be.undefined().and.not.be.empty().and.be.Object();
-          }
-          client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authListener);
-          return resolve();
-        });
-
-        const errListener = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
-          client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errListener);
-          reject(err);
-        });
-
-        client.decodeRequest(encodedAuthUri);
-      })
-    ));
+    // before(() => helper.createRandomAccount());
+    //
+    // after(() => helper.clearAccount());
+    //
+    // it('throws an error when encoded URI is empty', () =>
+    //   client.decodeRequest().should.be.rejected()
+    // );
+    //
+    // it('throws an error for container request of unknown app', () => (
+    //   new Promise((resolve, reject) => {
+    //     const contListener = client.setListener(CONST.LISTENER_TYPES.CONTAINER_REQ, (err, res) => {
+    //       client.removeListener(CONST.LISTENER_TYPES.CONTAINER_REQ, contListener);
+    //       reject(res);
+    //     });
+    //
+    //     const errListener = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
+    //       should(err).not.be.empty().and.be.String();
+    //       client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errListener);
+    //       resolve(err);
+    //     });
+    //     client.decodeRequest(encodedContUri);
+    //   })
+    // ));
+    //
+    // it('throws an error for invalid URI', () => (
+    //   new Promise((resolve, reject) => {
+    //     const authListener = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, res) => {
+    //       client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authListener);
+    //       reject(res);
+    //     });
+    //
+    //     const errListener = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
+    //       client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errListener);
+    //       resolve(err);
+    //     });
+    //
+    //     client.decodeRequest(`safe-auth:${crypto.randomBytes(32).toString('base64')}`);
+    //   })
+    // ));
+    //
+    // it('returns a decoded request for encoded Auth request', () => (
+    //   new Promise((resolve, reject) => {
+    //     const authListener = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, res) => {
+    //       should(res).not.be.undefined().and.be.Object().and.not.empty().and.have.properties(['reqId', 'authReq']);
+    //       should(res.reqId).not.be.undefined().and.be.Number();
+    //       should(res.authReq).be.Object().and.not.empty().and.have.properties([
+    //         'app',
+    //         'app_container',
+    //         'containers',
+    //         'containers_len',
+    //         'containers_cap']);
+    //       should(res.authReq.app).be.Object().and.not.empty().and.have.properties([
+    //         'id',
+    //         'scope',
+    //         'name',
+    //         'vendor']);
+    //       should(res.authReq.app.id).not.be.undefined().and.not.be.empty().and.be.String();
+    //       should(res.authReq.app.name).not.be.undefined().and.not.be.empty().and.be.String();
+    //       should(res.authReq.app.vendor).not.be.undefined().and.not.be.empty().and.be.String();
+    //       should(res.authReq.app_container).not.be.undefined().and.be.Boolean();
+    //       should(res.authReq.containers).not.be.undefined().and.be.Array();
+    //       should(res.authReq.containers_len).not.be.undefined().and.be.Number();
+    //       should(res.authReq.containers_cap).not.be.undefined().and.be.Number();
+    //
+    //       if (res.authReq.containers_len > 0) {
+    //         const container0 = res.authReq.containers[0];
+    //         should(container0).be.Object().and.not.empty().and.have.properties([
+    //           'cont_name',
+    //           'access'
+    //         ]);
+    //         should(container0.cont_name).not.be.undefined().and.not.be.empty().and.be.String();
+    //         should(container0.access).not.be.undefined().and.not.be.empty().and.be.Object();
+    //       }
+    //       client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authListener);
+    //       return resolve();
+    //     });
+    //
+    //     const errListener = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
+    //       client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errListener);
+    //       reject(err);
+    //     });
+    //
+    //     client.decodeRequest(encodedAuthUri);
+    //   })
+    // ));
     //
     // it('returns a decoded request for encoded Auth request without safe-auth: scheme', () => (
     //   new Promise((resolve, reject) => {

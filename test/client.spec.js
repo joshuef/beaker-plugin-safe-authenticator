@@ -477,9 +477,15 @@ describe('Client', () => {
       .then((res) => should(res).not.be.empty().and.be.String())
     );
     it('returns encoded response URI on success of allow', () => prepareReq()
-      .then(() => client.encodeContainersResp(decodedReq, true))
+      .then(() => {
+        console.log("after prepareReq");
+        return client.encodeContainersResp(decodedReq, true) } )
       .should.be.fulfilled()
-      .then((res) => should(res).not.be.empty().and.be.String())
+      .then((res) =>
+      {
+        console.log("and after that...");
+        should(res).not.be.empty().and.be.String()
+      })
     );
   });
 

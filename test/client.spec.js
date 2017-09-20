@@ -211,22 +211,22 @@ describe('Client', () => {
       })
     ));
 
-    // it('throws an error for invalid URI', () => (
-    //   new Promise((resolve, reject) => {
-    //     const authListener = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, res) => {
-    //       client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authListener);
-    //       reject(res);
-    //     });
-    //
-    //     const errListener = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
-    //       client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errListener);
-    //       resolve(err);
-    //     });
-    //
-    //     client.decodeRequest(`safe-auth:${crypto.randomBytes(32).toString('base64')}`);
-    //   })
-    // ));
-    //
+    it('throws an error for invalid URI', () => (
+      new Promise((resolve, reject) => {
+        const authListener = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, res) => {
+          client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authListener);
+          reject(res);
+        });
+
+        const errListener = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
+          client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errListener);
+          resolve(err);
+        });
+
+        client.decodeRequest(`safe-auth:${crypto.randomBytes(32).toString('base64')}`);
+      })
+    ));
+
     // it('returns a decoded request for encoded Auth request', () => (
     //   new Promise((resolve, reject) => {
     //     const authListener = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, res) => {

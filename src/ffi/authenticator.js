@@ -280,6 +280,8 @@ class Authenticator extends SafeLib {
   }
 
   decodeRequest(uri) {
+
+    console.log("DECODING", uri);
     return new Promise((resolve, reject) => {
       if (!uri) {
         return reject(new Error('Invalid URI'));
@@ -287,6 +289,8 @@ class Authenticator extends SafeLib {
       const parsedURI = uri.replace('safe-auth://', '').replace('safe-auth:', '').replace('/', '');
 
       if (!this.registeredClientHandle) {
+        console.log("DECODING NO HANDLE", uri);
+
         return this._decodeUnRegisteredRequest(parsedURI, resolve, reject);
       }
       const decodeReqAuthCb = this._pushCb(ffi.Callback(types.Void,
@@ -300,8 +304,13 @@ class Authenticator extends SafeLib {
             reqId,
             authReq
           };
+
+          console.log("DECODING CALLBACKKK", uri);
+
           return this._isAlreadyAuthorised(authReq)
             .then((isAuthorised) => {
+
+              console.log("Already authed??");
               if (isAuthorised) {
                 // re authorise the app
                 if (this[_reAuthoriseState] !== CONSTANTS.RE_AUTHORISE.STATE.UNLOCK) {

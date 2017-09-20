@@ -273,23 +273,23 @@ describe('Client', () => {
     //   })
     // ));
     //
-    // it('returns a decoded request for encoded Auth request without safe-auth: scheme', () => (
-    //   new Promise((resolve, reject) => {
-    //     const authListener = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, res) => {
-    //       should(res).not.be.undefined().and.be.Object().and.not.empty().and.have.properties(['reqId', 'authReq']);
-    //       client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authListener);
-    //       return resolve();
-    //     });
-    //
-    //     const errListener = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
-    //       client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errListener);
-    //       reject(err);
-    //     });
-    //
-    //     client.decodeRequest(encodedAuthUri.replace('safe-auth:', ''));
-    //   })
-    // ));
-    //
+    it('returns a decoded request for encoded Auth request without safe-auth: scheme', () => (
+      new Promise((resolve, reject) => {
+        const authListener = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, res) => {
+          should(res).not.be.undefined().and.be.Object().and.not.empty().and.have.properties(['reqId', 'authReq']);
+          client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authListener);
+          return resolve();
+        });
+
+        const errListener = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
+          client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errListener);
+          reject(err);
+        });
+
+        client.decodeRequest(encodedAuthUri.replace('safe-auth:', ''));
+      })
+    ));
+
     // it('retuns a decoded request for encoded Container request', () => (
     //   new Promise((resolve, reject) => {
     //     const contListener = client.setListener(CONST.LISTENER_TYPES.CONTAINER_REQ, (err, res) => {

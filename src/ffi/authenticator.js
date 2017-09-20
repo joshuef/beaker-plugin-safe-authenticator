@@ -36,6 +36,7 @@ class Authenticator extends SafeLib {
   constructor() {
     super();
     ipc();
+    this.numberOfListeners = 0;
     config.i18n();
     this[_registeredClientHandle] = null;
     this[_nwState] = CONSTANTS.NETWORK_STATUS.DISCONNECTED;
@@ -102,6 +103,11 @@ class Authenticator extends SafeLib {
   }
 
   setListener(type, cb) {
+
+    this.numberOfListeners++;
+
+    console.log( 'Added a listener for type: ', type)
+    console.log( 'total numbers of listeners now', this.numberOfListeners)
     // FIXME check .key required
     switch (type.key) {
       case CONSTANTS.LISTENER_TYPES.APP_LIST_UPDATE.key: {
@@ -123,6 +129,7 @@ class Authenticator extends SafeLib {
         return this[_reqErrListener].add(cb);
       }
       default: {
+        console.log("A listener failed to be added", this.numberOfListeners);
         throw new Error('Invalid listener type');
       }
     }

@@ -34,6 +34,79 @@ describe('Client', () => {
     ));
   });
 
+  describe('create Account', () => {
+    after(() => helper.clearAccount());
+
+    it('throws an error when account locator is empty', () => client.createAccount()
+      .should.be.rejectedWith(Error)
+      .then((err) => {
+        should(err.message).be.equal(i18n.__('messages.should_not_be_empty', i18n.__('Locator')));
+      })
+    );
+
+    it('throws error when account secret is empty', () => client.createAccount('test')
+      .should.be.rejectedWith(Error)
+      .then((err) => {
+        should(err.message).be.equal(i18n.__('messages.should_not_be_empty', i18n.__('Secret')));
+      })
+    );
+
+    it('throws an error when account locator is not string', () => client.createAccount(1111, 111)
+      .should.be.rejectedWith(Error)
+      .then((err) => {
+        should(err.message).be.equal(i18n.__('messages.must_be_string', i18n.__('Locator')));
+      })
+    );
+
+    it('throws an error when account secret is not string', () => client.createAccount('test', 111)
+      .should.be.rejectedWith(Error)
+      .then((err) => {
+        should(err.message).be.equal(i18n.__('messages.must_be_string', i18n.__('Secret')));
+      })
+    );
+
+    it('throws an error when account locator is empty string', () => client.createAccount(' ', 'test')
+      .should.be.rejectedWith(Error)
+      .then((err) => {
+        should(err.message).be.equal(i18n.__('messages.should_not_be_empty', i18n.__('Locator')));
+      })
+    );
+
+    it('throws an error when account secret is empty string', () => client.createAccount('test', ' ')
+      .should.be.rejectedWith(Error)
+      .then((err) => {
+        should(err.message).be.equal(i18n.__('messages.should_not_be_empty', i18n.__('Secret')));
+      })
+    );
+
+    it('sets authenticator handle when account creation is successful', () => {
+      randomCredentials = helper.getRandomCredentials();
+      return client.createAccount(randomCredentials.locator,
+        randomCredentials.secret, randomCredentials.invite)
+        .should.be.fulfilled()
+        .then(() => {
+          should(client.registeredClientHandle).not.be.empty();
+          should(client.registeredClientHandle).not.be.null();
+          should(client.registeredClientHandle).not.be.undefined();
+          should(client.registeredClientHandle).be.instanceof(Buffer);
+        });
+    });
+
+    it('emit network state as connected when account creation is successful', () => (
+      new Promise((resolve) => {
+        const nwListener = client.setListener(CONST.LISTENER_TYPES.NW_STATE_CHANGE,
+          (err, state) => {
+            should(err).be.null();
+            should(state).not.be.undefined();
+            should(state).be.equal(CONST.NETWORK_STATUS.CONNECTED);
+            client.removeListener(CONST.LISTENER_TYPES.NW_STATE_CHANGE, nwListener);
+            return resolve();
+          });
+        helper.createRandomAccount();
+      }))
+    );
+  });
+
 
   describe('after revoking', () => {
     before(() => new Promise(

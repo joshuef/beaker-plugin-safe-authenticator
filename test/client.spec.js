@@ -678,7 +678,10 @@ describe('Client', () => {
           'available']);
         should(res.done).not.be.undefined().and.be.Number();
         should(res.available).not.be.undefined().and.be.Number();
+        console.log("ACTUALLY TEST DONE (inside after promise)");
       })
     );
+
+    console.log("ACTUALLY TEST DONE");
   });
 });

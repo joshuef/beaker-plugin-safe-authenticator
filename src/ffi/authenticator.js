@@ -105,8 +105,8 @@ class Authenticator extends SafeLib {
   setListener(type, cb) {
     this.numberOfListeners += 1;
 
-    console.log('Added a listener for type: ', type);
-    console.log('total numbers of listeners now', this.numberOfListeners);
+    // console.log('Added a listener for type: ', type.key);
+    // console.log('total numbers of listeners now', this.numberOfListeners);
     // FIXME check .key required
     switch (type.key) {
       case CONSTANTS.LISTENER_TYPES.APP_LIST_UPDATE.key: {

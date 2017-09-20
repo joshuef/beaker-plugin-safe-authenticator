@@ -478,13 +478,13 @@ describe('Client', () => {
     );
     it('returns encoded response URI on success of allow', () => prepareReq()
       .then(() => {
-        console.log("after prepareReq");
-        return client.encodeContainersResp(decodedReq, true) } )
+        console.log('after prepareReq');
+        return client.encodeContainersResp(decodedReq, true);
+      })
       .should.be.fulfilled()
-      .then((res) =>
-      {
-        console.log("and after that...");
-        should(res).not.be.empty().and.be.String()
+      .then((res) => {
+        console.log('and after that...');
+        should(res).not.be.empty().and.be.String();
       })
     );
   });

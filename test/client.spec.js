@@ -194,23 +194,23 @@ describe('Client', () => {
     it('throws an error when encoded URI is empty', () =>
       client.decodeRequest().should.be.rejected()
     );
-    //
-    // it('throws an error for container request of unknown app', () => (
-    //   new Promise((resolve, reject) => {
-    //     const contListener = client.setListener(CONST.LISTENER_TYPES.CONTAINER_REQ, (err, res) => {
-    //       client.removeListener(CONST.LISTENER_TYPES.CONTAINER_REQ, contListener);
-    //       reject(res);
-    //     });
-    //
-    //     const errListener = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
-    //       should(err).not.be.empty().and.be.String();
-    //       client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errListener);
-    //       resolve(err);
-    //     });
-    //     client.decodeRequest(encodedContUri);
-    //   })
-    // ));
-    //
+
+    it('throws an error for container request of unknown app', () => (
+      new Promise((resolve, reject) => {
+        const contListener = client.setListener(CONST.LISTENER_TYPES.CONTAINER_REQ, (err, res) => {
+          client.removeListener(CONST.LISTENER_TYPES.CONTAINER_REQ, contListener);
+          reject(res);
+        });
+
+        const errListener = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
+          should(err).not.be.empty().and.be.String();
+          client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errListener);
+          resolve(err);
+        });
+        client.decodeRequest(encodedContUri);
+      })
+    ));
+
     // it('throws an error for invalid URI', () => (
     //   new Promise((resolve, reject) => {
     //     const authListener = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, res) => {

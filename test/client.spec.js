@@ -418,276 +418,276 @@ describe('Client', () => {
       .then((res) => should(res).not.be.empty().and.be.String())
     );
   });
-
-  describe('encode container response', () => {
-    let decodedReq = null;
-    const prepareReq = () => new Promise((resolve, reject) => {
-      const contListener = client.setListener(CONST.LISTENER_TYPES.CONTAINER_REQ, (err, req) => {
-        decodedReq = req;
-        client.removeListener(CONST.LISTENER_TYPES.CONTAINER_REQ, contListener);
-        return resolve();
-      });
-
-      const authListener = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, req) => {
-        client.encodeAuthResp(req, true).then(() => client.decodeRequest(encodedContUri));
-        client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authListener);
-      });
-
-      const errListener = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
-        client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errListener);
-        reject(err);
-      });
-
-      decodedReqForRandomClient(encodedAuthUri);
-    });
-
-    before(() => prepareReq());
-
-    after(() => helper.clearAccount());
-
-    it('throws an error if request is undefined', () => client.encodeContainersResp()
-      .should.be.rejectedWith(Error)
-      .then((err) => {
-        should(err.message).be.equal(i18n.__('messages.invalid_params'));
-      })
-    );
-
-    it('throws an error if decision is not boolean type', () => (
-      Promise.all([
-        client.encodeContainersResp({}, 123).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params'))),
-        client.encodeContainersResp({}, 'string').should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params'))),
-        client.encodeContainersResp({}, { a: 1 }).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params'))),
-        client.encodeContainersResp({}, [1, 2, 3]).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params'))),
-        client.encodeContainersResp({}, [1, 2, 3]).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params')))
-      ]))
-    );
-
-    it('throws an error if request doesn\'t have request ID(reqId)', () => client.encodeContainersResp({}, true)
-      .should.be.rejectedWith(Error)
-      .then((err) => should(err.message).be.equal(i18n.__('messages.invalid_req')))
-    );
-
-    it('throws an error when invalid request is passed', () => client.encodeContainersResp(Object.assign({}, decodedReq, { reqId: 123 }), true)
-      .should.be.rejectedWith(Error)
-      .then((err) => should(err.message).be.equal(i18n.__('messages.invalid_req')))
-    );
-
-    it('returns encoded response URI on success of deny', () => client.encodeContainersResp(decodedReq, false)
-      .should.be.fulfilled()
-      .then((res) => should(res).not.be.empty().and.be.String())
-    );
-    it('returns encoded response URI on success of allow', () => prepareReq()
-      .then(() => {
-        console.log('after prepareReq');
-        return client.encodeContainersResp(decodedReq, true);
-      })
-      .should.be.fulfilled()
-      .then((res) => {
-        console.log('and after that...');
-        should(res).not.be.empty().and.be.String();
-      })
-    );
-  });
-
-  // HEREEEE
-  describe('get authorised apps', () => {
-    const prepareReq = () => new Promise((resolve, reject) => {
-      const authL = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ,
-        (err, req) => client.encodeAuthResp(req, true).then(() => {
-          client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authL);
-          resolve();
-        }));
-
-      const errL = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
-        client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errL);
-        reject(err);
-      });
-
-      client.decodeRequest(encodedAuthUri);
-    });
-
-    before(() => helper.createRandomAccount());
-
-    after(() => helper.clearAccount());
-
-    it('return empty array before registering any app', () => client.getRegisteredApps()
-      .should.be.fulfilled()
-      .then((apps) => should(apps).be.Array().and.be.empty())
-    );
-
-    it('return apps list after registering apps', () => prepareReq()
-      .then(() => client.getRegisteredApps())
-      .should.be.fulfilled()
-      .then((apps) => should(apps).be.Array().and.not.be.empty())
-    );
-  });
-
-  describe('revoke app', () => {
-    let appId = null;
-    before(() => new Promise(
-      (resolve, reject) => {
-        const authL = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, req) => {
-          appId = req.authReq.app.id;
-          return client.encodeAuthResp(req, true).then(() => {
-            client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authL);
-            resolve();
-          });
-        });
-
-        const errL = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, () => {
-          client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errL);
-          reject();
-        });
-
-        decodedReqForRandomClient(encodedAuthUri);
-      })
-    );
-
-    after(() => helper.clearAccount());
-
-    it('throws an error when appId is undefined', () => client.revokeApp()
-      .should.be.rejectedWith(Error)
-      .then((err) => should(err.message).be.equal(i18n.__('messages.should_not_be_empty', i18n.__('AppId'))))
-    );
-
-    it('throws an error when appId is not of String type', () => (
-      Promise.all([
-        client.revokeApp(123).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.must_be_string', i18n.__('AppId')))),
-        client.revokeApp(true).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.must_be_string', i18n.__('AppId')))),
-        client.revokeApp({ a: 1 }).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.must_be_string', i18n.__('AppId')))),
-        client.revokeApp([1, 2, 3]).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.must_be_string', i18n.__('AppId'))))
-      ])
-    ));
-
-    it('throws an error when appId is empty string', () => client.revokeApp(' ')
-      .should.be.rejectedWith(Error)
-      .then((err) => should(err.message).be.equal(i18n.__('messages.should_not_be_empty', i18n.__('AppId'))))
-    );
-
-    it('removes app from registered app list', () => client.revokeApp(appId)
-      .should.be.fulfilled()
-      .then(() => client.getRegisteredApps())
-      .then((apps) => should(apps).be.Array().and.be.empty())
-    );
-  });
-
-  describe('after revoking', () => {
-    before(() => new Promise(
-      (resolve, reject) => {
-        const authL = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, req) => {
-          const appId = req.authReq.app.id;
-          return client.encodeAuthResp(req, true)
-            .then(() => client.revokeApp(appId).then(() => {
-              client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authL);
-              resolve();
-            }));
-        });
-
-        const errL = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
-          client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errL);
-          reject(err);
-        });
-
-        decodedReqForRandomClient(encodedAuthUri);
-      })
-    );
-
-    after(() => helper.clearAccount());
-
-    it('same app can be registered again', () => (
-      new Promise((resolve, reject) => {
-        setTimeout(() => {
-          const authL = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, req) => (
-            client.encodeAuthResp(req, true)
-              .then(() => client.getRegisteredApps()
-                .then((apps) => {
-                  should(apps.length).be.equal(1);
-                  client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authL);
-                  return resolve();
-                }))
-          ));
-          const errL = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
-            client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errL);
-            reject(err);
-          });
-          client.decodeRequest(encodedAuthUri);
-        }, 1000);
-      }))
-    );
-  });
-
-  describe('re-authorising', () => {
-    before(() => new Promise(
-      (resolve, reject) => {
-        const authL = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ,
-          (err, req) => client.encodeAuthResp(req, true).then(() => {
-            client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authL);
-            resolve();
-          }));
-
-        const errL = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
-          client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errL);
-          reject(err);
-        });
-
-        decodedReqForRandomClient(encodedAuthUri);
-      })
-    );
-
-    after(() => helper.clearAccount());
-
-    it.skip('doesn\'t throw error', () => (
-      new Promise((resolve, reject) => {
-        client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, req) => (
-          client.encodeAuthResp(req, true)
-            .then((res) => {
-              should(res).not.be.empty().and.be.String();
-              return resolve();
-            })
-        ));
-        client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, reject);
-        client.decodeRequest(encodedAuthUri);
-      })
-    ));
-  });
-
-  describe('account information', () => {
-    before(() => new Promise(
-      (resolve, reject) => {
-        console.log('AND HERE WE ARE BEFORE PROMISE');
-        const authL = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, req) => (
-          client.encodeAuthResp(req, true).then(() => {
-            client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authL);
-
-            console.log('AND HERE WE ARE LISTENING AND RESOLVING');
-            resolve();
-          })
-        ));
-
-        const errL = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, () => {
-          client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errL);
-          console.log('AND HERE WE ARE LISTENING AND REJECTING');
-          reject();
-        });
-
-        decodedReqForRandomClient(encodedAuthUri);
-      })
-    );
-
-    after(() => helper.clearAccount());
-
-    it('are retrievable', () => client.getAccountInfo()
-      .should.be.fulfilled()
-      .then((res) => {
-        should(res).be.Object().and.not.empty().and.have.properties([
-          'done',
-          'available']);
-        should(res.done).not.be.undefined().and.be.Number();
-        should(res.available).not.be.undefined().and.be.Number();
-        console.log('ACTUALLY TEST DONE (inside after promise)');
-      })
-    );
-
-    console.log('ACTUALLY TEST DONE');
-  });
+  //
+  // describe('encode container response', () => {
+  //   let decodedReq = null;
+  //   const prepareReq = () => new Promise((resolve, reject) => {
+  //     const contListener = client.setListener(CONST.LISTENER_TYPES.CONTAINER_REQ, (err, req) => {
+  //       decodedReq = req;
+  //       client.removeListener(CONST.LISTENER_TYPES.CONTAINER_REQ, contListener);
+  //       return resolve();
+  //     });
+  //
+  //     const authListener = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, req) => {
+  //       client.encodeAuthResp(req, true).then(() => client.decodeRequest(encodedContUri));
+  //       client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authListener);
+  //     });
+  //
+  //     const errListener = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
+  //       client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errListener);
+  //       reject(err);
+  //     });
+  //
+  //     decodedReqForRandomClient(encodedAuthUri);
+  //   });
+  //
+  //   before(() => prepareReq());
+  //
+  //   after(() => helper.clearAccount());
+  //
+  //   it('throws an error if request is undefined', () => client.encodeContainersResp()
+  //     .should.be.rejectedWith(Error)
+  //     .then((err) => {
+  //       should(err.message).be.equal(i18n.__('messages.invalid_params'));
+  //     })
+  //   );
+  //
+  //   it('throws an error if decision is not boolean type', () => (
+  //     Promise.all([
+  //       client.encodeContainersResp({}, 123).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params'))),
+  //       client.encodeContainersResp({}, 'string').should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params'))),
+  //       client.encodeContainersResp({}, { a: 1 }).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params'))),
+  //       client.encodeContainersResp({}, [1, 2, 3]).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params'))),
+  //       client.encodeContainersResp({}, [1, 2, 3]).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params')))
+  //     ]))
+  //   );
+  //
+  //   it('throws an error if request doesn\'t have request ID(reqId)', () => client.encodeContainersResp({}, true)
+  //     .should.be.rejectedWith(Error)
+  //     .then((err) => should(err.message).be.equal(i18n.__('messages.invalid_req')))
+  //   );
+  //
+  //   it('throws an error when invalid request is passed', () => client.encodeContainersResp(Object.assign({}, decodedReq, { reqId: 123 }), true)
+  //     .should.be.rejectedWith(Error)
+  //     .then((err) => should(err.message).be.equal(i18n.__('messages.invalid_req')))
+  //   );
+  //
+  //   it('returns encoded response URI on success of deny', () => client.encodeContainersResp(decodedReq, false)
+  //     .should.be.fulfilled()
+  //     .then((res) => should(res).not.be.empty().and.be.String())
+  //   );
+  //   it('returns encoded response URI on success of allow', () => prepareReq()
+  //     .then(() => {
+  //       console.log('after prepareReq');
+  //       return client.encodeContainersResp(decodedReq, true);
+  //     })
+  //     .should.be.fulfilled()
+  //     .then((res) => {
+  //       console.log('and after that...');
+  //       should(res).not.be.empty().and.be.String();
+  //     })
+  //   );
+  // });
+  // //
+  // // // HEREEEE
+  // // describe('get authorised apps', () => {
+  // //   const prepareReq = () => new Promise((resolve, reject) => {
+  // //     const authL = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ,
+  // //       (err, req) => client.encodeAuthResp(req, true).then(() => {
+  // //         client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authL);
+  // //         resolve();
+  // //       }));
+  // //
+  // //     const errL = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
+  // //       client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errL);
+  // //       reject(err);
+  // //     });
+  // //
+  // //     client.decodeRequest(encodedAuthUri);
+  // //   });
+  // //
+  // //   before(() => helper.createRandomAccount());
+  // //
+  // //   after(() => helper.clearAccount());
+  // //
+  // //   it('return empty array before registering any app', () => client.getRegisteredApps()
+  // //     .should.be.fulfilled()
+  // //     .then((apps) => should(apps).be.Array().and.be.empty())
+  // //   );
+  // //
+  // //   it('return apps list after registering apps', () => prepareReq()
+  // //     .then(() => client.getRegisteredApps())
+  // //     .should.be.fulfilled()
+  // //     .then((apps) => should(apps).be.Array().and.not.be.empty())
+  // //   );
+  // // });
+  // //
+  // // describe('revoke app', () => {
+  // //   let appId = null;
+  // //   before(() => new Promise(
+  // //     (resolve, reject) => {
+  // //       const authL = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, req) => {
+  // //         appId = req.authReq.app.id;
+  // //         return client.encodeAuthResp(req, true).then(() => {
+  // //           client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authL);
+  // //           resolve();
+  // //         });
+  // //       });
+  // //
+  // //       const errL = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, () => {
+  // //         client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errL);
+  // //         reject();
+  // //       });
+  // //
+  // //       decodedReqForRandomClient(encodedAuthUri);
+  // //     })
+  // //   );
+  // //
+  // //   after(() => helper.clearAccount());
+  // //
+  // //   it('throws an error when appId is undefined', () => client.revokeApp()
+  // //     .should.be.rejectedWith(Error)
+  // //     .then((err) => should(err.message).be.equal(i18n.__('messages.should_not_be_empty', i18n.__('AppId'))))
+  // //   );
+  // //
+  // //   it('throws an error when appId is not of String type', () => (
+  // //     Promise.all([
+  // //       client.revokeApp(123).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.must_be_string', i18n.__('AppId')))),
+  // //       client.revokeApp(true).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.must_be_string', i18n.__('AppId')))),
+  // //       client.revokeApp({ a: 1 }).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.must_be_string', i18n.__('AppId')))),
+  // //       client.revokeApp([1, 2, 3]).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.must_be_string', i18n.__('AppId'))))
+  // //     ])
+  // //   ));
+  // //
+  // //   it('throws an error when appId is empty string', () => client.revokeApp(' ')
+  // //     .should.be.rejectedWith(Error)
+  // //     .then((err) => should(err.message).be.equal(i18n.__('messages.should_not_be_empty', i18n.__('AppId'))))
+  // //   );
+  // //
+  // //   it('removes app from registered app list', () => client.revokeApp(appId)
+  // //     .should.be.fulfilled()
+  // //     .then(() => client.getRegisteredApps())
+  // //     .then((apps) => should(apps).be.Array().and.be.empty())
+  // //   );
+  // // });
+  // //
+  // // describe('after revoking', () => {
+  // //   before(() => new Promise(
+  // //     (resolve, reject) => {
+  // //       const authL = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, req) => {
+  // //         const appId = req.authReq.app.id;
+  // //         return client.encodeAuthResp(req, true)
+  // //           .then(() => client.revokeApp(appId).then(() => {
+  // //             client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authL);
+  // //             resolve();
+  // //           }));
+  // //       });
+  // //
+  // //       const errL = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
+  // //         client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errL);
+  // //         reject(err);
+  // //       });
+  // //
+  // //       decodedReqForRandomClient(encodedAuthUri);
+  // //     })
+  // //   );
+  // //
+  // //   after(() => helper.clearAccount());
+  // //
+  // //   it('same app can be registered again', () => (
+  // //     new Promise((resolve, reject) => {
+  // //       setTimeout(() => {
+  // //         const authL = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, req) => (
+  // //           client.encodeAuthResp(req, true)
+  // //             .then(() => client.getRegisteredApps()
+  // //               .then((apps) => {
+  // //                 should(apps.length).be.equal(1);
+  // //                 client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authL);
+  // //                 return resolve();
+  // //               }))
+  // //         ));
+  // //         const errL = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
+  // //           client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errL);
+  // //           reject(err);
+  // //         });
+  // //         client.decodeRequest(encodedAuthUri);
+  // //       }, 1000);
+  // //     }))
+  // //   );
+  // // });
+  // //
+  // // describe('re-authorising', () => {
+  // //   before(() => new Promise(
+  // //     (resolve, reject) => {
+  // //       const authL = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ,
+  // //         (err, req) => client.encodeAuthResp(req, true).then(() => {
+  // //           client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authL);
+  // //           resolve();
+  // //         }));
+  // //
+  // //       const errL = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
+  // //         client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errL);
+  // //         reject(err);
+  // //       });
+  // //
+  // //       decodedReqForRandomClient(encodedAuthUri);
+  // //     })
+  // //   );
+  // //
+  // //   after(() => helper.clearAccount());
+  // //
+  // //   it.skip('doesn\'t throw error', () => (
+  // //     new Promise((resolve, reject) => {
+  // //       client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, req) => (
+  // //         client.encodeAuthResp(req, true)
+  // //           .then((res) => {
+  // //             should(res).not.be.empty().and.be.String();
+  // //             return resolve();
+  // //           })
+  // //       ));
+  // //       client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, reject);
+  // //       client.decodeRequest(encodedAuthUri);
+  // //     })
+  // //   ));
+  // // });
+  // //
+  // // describe('account information', () => {
+  // //   before(() => new Promise(
+  // //     (resolve, reject) => {
+  // //       console.log('AND HERE WE ARE BEFORE PROMISE');
+  // //       const authL = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, req) => (
+  // //         client.encodeAuthResp(req, true).then(() => {
+  // //           client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authL);
+  // //
+  // //           console.log('AND HERE WE ARE LISTENING AND RESOLVING');
+  // //           resolve();
+  // //         })
+  // //       ));
+  // //
+  // //       const errL = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, () => {
+  // //         client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errL);
+  // //         console.log('AND HERE WE ARE LISTENING AND REJECTING');
+  // //         reject();
+  // //       });
+  // //
+  // //       decodedReqForRandomClient(encodedAuthUri);
+  // //     })
+  // //   );
+  // //
+  // //   after(() => helper.clearAccount());
+  // //
+  // //   it('are retrievable', () => client.getAccountInfo()
+  // //     .should.be.fulfilled()
+  // //     .then((res) => {
+  // //       should(res).be.Object().and.not.empty().and.have.properties([
+  // //         'done',
+  // //         'available']);
+  // //       should(res.done).not.be.undefined().and.be.Number();
+  // //       should(res.available).not.be.undefined().and.be.Number();
+  // //       console.log('ACTUALLY TEST DONE (inside after promise)');
+  // //     })
+  // //   );
+  // //
+  // //   console.log('ACTUALLY TEST DONE');
+  // // });
 });

@@ -110,9 +110,9 @@ describe('Client', () => {
 
   describe('login', () => {
 
-    let loginCreds =  null;
+    let randomCredentials =  null;
     before(() => helper.createRandomAccount()
-      .then((credential) => (loginCreds = credential))
+      .then((credential) => (randomCredentials = credential))
     );
 
     after(() => helper.clearAccount());
@@ -160,8 +160,8 @@ describe('Client', () => {
       })
     );
 
-    it('sets authenticator handle when account login is successful', () => client.login(loginCreds.locator,
-      loginCreds.secret)
+    it('sets authenticator handle when account login is successful', () => client.login(randomCredentials.locator,
+      randomCredentials.secret)
       .should.be.fulfilled()
       .then(() => {
         should(client.registeredClientHandle).not.be.empty();
@@ -187,13 +187,13 @@ describe('Client', () => {
   });
   //
   describe('decrypt request', () => {
-    // before(() => helper.createRandomAccount());
-    //
-    // after(() => helper.clearAccount());
-    //
-    // it('throws an error when encoded URI is empty', () =>
-    //   client.decodeRequest().should.be.rejected()
-    // );
+    before(() => helper.createRandomAccount());
+
+    after(() => helper.clearAccount());
+
+    it('throws an error when encoded URI is empty', () =>
+      client.decodeRequest().should.be.rejected()
+    );
     //
     // it('throws an error for container request of unknown app', () => (
     //   new Promise((resolve, reject) => {

@@ -418,5 +418,4 @@ describe('Client', () => {
       .then((res) => should(res).not.be.empty().and.be.String())
     );
   });
-
 });

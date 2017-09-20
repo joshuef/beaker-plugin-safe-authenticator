@@ -281,7 +281,7 @@ class Authenticator extends SafeLib {
 
   decodeRequest(uri) {
 
-    console.log("DECODING", uri);
+    console.log("DECODING");
     return new Promise((resolve, reject) => {
       if (!uri) {
         return reject(new Error('Invalid URI'));
@@ -289,7 +289,7 @@ class Authenticator extends SafeLib {
       const parsedURI = uri.replace('safe-auth://', '').replace('safe-auth:', '').replace('/', '');
 
       if (!this.registeredClientHandle) {
-        console.log("DECODING NO HANDLE", uri);
+        console.log("DECODING NO HANDLE");
 
         return this._decodeUnRegisteredRequest(parsedURI, resolve, reject);
       }
@@ -305,7 +305,7 @@ class Authenticator extends SafeLib {
             authReq
           };
 
-          console.log("DECODING CALLBACKKK", uri);
+          console.log("DECODING CALLBACKKK");
 
           return this._isAlreadyAuthorised(authReq)
             .then((isAuthorised) => {
@@ -389,6 +389,8 @@ class Authenticator extends SafeLib {
           this[_reqErrListener].broadcast(JSON.stringify(result));
         }));
       try {
+
+        console.log("TRYINNGNGGGGGGGG");
         this.safeLib.auth_decode_ipc_msg(
           this.registeredClientHandle,
           types.allocCString(parsedURI),
@@ -399,6 +401,7 @@ class Authenticator extends SafeLib {
           this._getCb(shareMdataCb),
           this._getCb(decodeReqErrorCb));
       } catch (e) {
+        console.log("FAILIIIUUURRREEEEEEE===>>>>>>>");
         reject(e);
       }
     });

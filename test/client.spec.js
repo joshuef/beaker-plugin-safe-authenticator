@@ -195,38 +195,38 @@ describe('Client', () => {
       client.decodeRequest().should.be.rejected()
     );
 
-    // it('throws an error for container request of unknown app', () => (
-    //   new Promise((resolve, reject) => {
-    //     const contListener = client.setListener(CONST.LISTENER_TYPES.CONTAINER_REQ, (err, res) => {
-    //       client.removeListener(CONST.LISTENER_TYPES.CONTAINER_REQ, contListener);
-    //       reject(res);
-    //     });
-    //
-    //     const errListener = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
-    //       should(err).not.be.empty().and.be.String();
-    //       client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errListener);
-    //       resolve(err);
-    //     });
-    //     client.decodeRequest(encodedContUri);
-    //   })
-    // ));
-
-    it('throws an error for invalid URI', () => (
+    it('throws an error for container request of unknown app', () => (
       new Promise((resolve, reject) => {
-        const authListener = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, res) => {
-          client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authListener);
+        const contListener = client.setListener(CONST.LISTENER_TYPES.CONTAINER_REQ, (err, res) => {
+          client.removeListener(CONST.LISTENER_TYPES.CONTAINER_REQ, contListener);
           reject(res);
         });
 
         const errListener = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
+          should(err).not.be.empty().and.be.String();
           client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errListener);
           resolve(err);
         });
-
-        client.decodeRequest(`safe-auth:${crypto.randomBytes(32).toString('base64')}`);
+        client.decodeRequest(encodedContUri);
       })
     ));
 
+    // it('throws an error for invalid URI', () => (
+    //   new Promise((resolve, reject) => {
+    //     const authListener = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, res) => {
+    //       client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authListener);
+    //       reject(res);
+    //     });
+    //
+    //     const errListener = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
+    //       client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errListener);
+    //       resolve(err);
+    //     });
+    //
+    //     client.decodeRequest(`safe-auth:${crypto.randomBytes(32).toString('base64')}`);
+    //   })
+    // ));
+    //
     // it('returns a decoded request for encoded Auth request', () => (
     //   new Promise((resolve, reject) => {
     //     const authListener = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, res) => {
@@ -289,7 +289,7 @@ describe('Client', () => {
     //     client.decodeRequest(encodedAuthUri.replace('safe-auth:', ''));
     //   })
     // ));
-
+    //
     // it('retuns a decoded request for encoded Container request', () => (
     //   new Promise((resolve, reject) => {
     //     const contListener = client.setListener(CONST.LISTENER_TYPES.CONTAINER_REQ, (err, res) => {
@@ -363,64 +363,64 @@ describe('Client', () => {
     // ));
   });
 
-  // describe('encode auth response', () => {
-  //   let decodedReq = null;
-  //   const prepareReq = () => new Promise((resolve, reject) => {
-  //     const authL = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, req) => {
-  //       decodedReq = req;
-  //       client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authL);
-  //       return resolve();
-  //     });
-  //
-  //     const errL = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
-  //       client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errL);
-  //       reject(err);
-  //     });
-  //
-  //     decodedReqForRandomClient(encodedAuthUri);
-  //   });
-  //
-  //   before(() => prepareReq());
-  //
-  //   after(() => helper.clearAccount());
-  //
-  //   it('throws an error if request is undefined', () => client.encodeAuthResp()
-  //     .should.be.rejectedWith(Error)
-  //     .then((err) => {
-  //       should(err.message).be.equal(i18n.__('messages.invalid_params'));
-  //     })
-  //   );
-  //
-  //   it('throws an error if decision is not boolean type', () => (
-  //     Promise.all([
-  //       client.encodeAuthResp({}, 123).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params'))),
-  //       client.encodeAuthResp({}, 'string').should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params'))),
-  //       client.encodeAuthResp({}, { a: 1 }).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params'))),
-  //       client.encodeAuthResp({}, [1, 2, 3]).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params'))),
-  //       client.encodeAuthResp({}, [1, 2, 3]).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params')))
-  //     ]))
-  //   );
-  //
-  //   it('throws an error if request doesn\'t have request ID(reqId)', () => client.encodeAuthResp({}, true)
-  //     .should.be.rejectedWith(Error)
-  //     .then((err) => should(err.message).be.equal(i18n.__('messages.invalid_req')))
-  //   );
-  //
-  //   it('throws an error when invalid request is passed', () => client.encodeAuthResp(Object.assign({}, decodedReq, { reqId: 123 }), true)
-  //     .should.be.rejectedWith(Error)
-  //     .then((err) => should(err.message).be.equal(i18n.__('messages.invalid_req')))
-  //   );
-  //
-  //   it('returns encoded response URI on success of deny', () => client.encodeAuthResp(decodedReq, false)
-  //     .should.be.fulfilled()
-  //     .then((res) => should(res).not.be.empty().and.be.String())
-  //   );
-  //
-  //   it('returns encoded response URI on success of allow', () => prepareReq()
-  //     .then(() => client.encodeAuthResp(decodedReq, true))
-  //     .should.be.fulfilled()
-  //     .then((res) => should(res).not.be.empty().and.be.String())
-  //   );
+  describe('encode auth response', () => {
+    let decodedReq = null;
+    const prepareReq = () => new Promise((resolve, reject) => {
+      const authL = client.setListener(CONST.LISTENER_TYPES.AUTH_REQ, (err, req) => {
+        decodedReq = req;
+        client.removeListener(CONST.LISTENER_TYPES.AUTH_REQ, authL);
+        return resolve();
+      });
+
+      const errL = client.setListener(CONST.LISTENER_TYPES.REQUEST_ERR, (err) => {
+        client.removeListener(CONST.LISTENER_TYPES.REQUEST_ERR, errL);
+        reject(err);
+      });
+
+      decodedReqForRandomClient(encodedAuthUri);
+    });
+
+    before(() => prepareReq());
+
+    after(() => helper.clearAccount());
+
+    it('throws an error if request is undefined', () => client.encodeAuthResp()
+      .should.be.rejectedWith(Error)
+      .then((err) => {
+        should(err.message).be.equal(i18n.__('messages.invalid_params'));
+      })
+    );
+
+    it('throws an error if decision is not boolean type', () => (
+      Promise.all([
+        client.encodeAuthResp({}, 123).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params'))),
+        client.encodeAuthResp({}, 'string').should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params'))),
+        client.encodeAuthResp({}, { a: 1 }).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params'))),
+        client.encodeAuthResp({}, [1, 2, 3]).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params'))),
+        client.encodeAuthResp({}, [1, 2, 3]).should.be.rejectedWith(Error).then((err) => should(err.message).be.equal(i18n.__('messages.invalid_params')))
+      ]))
+    );
+
+    it('throws an error if request doesn\'t have request ID(reqId)', () => client.encodeAuthResp({}, true)
+      .should.be.rejectedWith(Error)
+      .then((err) => should(err.message).be.equal(i18n.__('messages.invalid_req')))
+    );
+
+    it('throws an error when invalid request is passed', () => client.encodeAuthResp(Object.assign({}, decodedReq, { reqId: 123 }), true)
+      .should.be.rejectedWith(Error)
+      .then((err) => should(err.message).be.equal(i18n.__('messages.invalid_req')))
+    );
+
+    it('returns encoded response URI on success of deny', () => client.encodeAuthResp(decodedReq, false)
+      .should.be.fulfilled()
+      .then((res) => should(res).not.be.empty().and.be.String())
+    );
+
+    it('returns encoded response URI on success of allow', () => prepareReq()
+      .then(() => client.encodeAuthResp(decodedReq, true))
+      .should.be.fulfilled()
+      .then((res) => should(res).not.be.empty().and.be.String())
+    );
   });
 
   describe('encode container response', () => {

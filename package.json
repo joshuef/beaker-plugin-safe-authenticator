@@ -21,8 +21,7 @@
     "build-libs:actual": "npm run build-native && npm run build-system-uri",
     "build-libs:mock": "npm run build-native-mock && npm run build-system-uri",
     "build-libs": "npm run init-submodule && node ./build_libs.js",
-    "postinstall": "download_deps --package package.json",
-    "prepush" : "yarn lint"
+    "postinstall": "download_deps --package package.json"
   },
   "repository": {
     "type": "git",

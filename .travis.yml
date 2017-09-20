@@ -39,5 +39,5 @@ install:
   - NODE_ENV=test yarn install
 
 script:
-  - yarn run lint
+  # - yarn run lint
   - yarn test

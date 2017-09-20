@@ -107,80 +107,81 @@ describe('Client', () => {
     );
   });
 
-  // describe('login', () => {
-  //   before(() => helper.createRandomAccount()
-  //     .then((credential) => (randomCredentials = credential))
-  //   );
-  //
-  //   after(() => helper.clearAccount());
-  //
-  //   it('throws an error when account locator is empty', () => client.login()
-  //     .should.be.rejectedWith(Error)
-  //     .then((err) => {
-  //       should(err.message).be.equal(i18n.__('messages.should_not_be_empty', i18n.__('Locator')));
-  //     })
-  //   );
-  //
-  //   it('throws an error when account secret is empty', () => client.login('test')
-  //     .should.be.rejectedWith(Error)
-  //     .then((err) => {
-  //       should(err.message).be.equal(i18n.__('messages.should_not_be_empty', i18n.__('Secret')));
-  //     })
-  //   );
-  //
-  //   it('throws an error when account locator is not string', () => client.login(1111, 111)
-  //     .should.be.rejectedWith(Error)
-  //     .then((err) => {
-  //       should(err.message).be.equal(i18n.__('messages.must_be_string', i18n.__('Locator')));
-  //     })
-  //   );
-  //
-  //   it('throws an error when account secret is not string', () => client.login('test', 111)
-  //     .should.be.rejectedWith(Error)
-  //     .then((err) => {
-  //       should(err.message).be.equal(i18n.__('messages.must_be_string', i18n.__('Secret')));
-  //     })
-  //   );
-  //
-  //   it('throws an error when account locator is empty string', () => client.login('  ', 'test')
-  //     .should.be.rejectedWith(Error)
-  //     .then((err) => {
-  //       should(err.message).be.equal(i18n.__('messages.should_not_be_empty', i18n.__('Locator')));
-  //     })
-  //   );
-  //
-  //   it('throws an error when account secret is empty string', () => client.login('test', '  ')
-  //     .should.be.rejectedWith(Error)
-  //     .then((err) => {
-  //       should(err.message).be.equal(i18n.__('messages.should_not_be_empty', i18n.__('Secret')));
-  //     })
-  //   );
-  //
-  //   it('sets authenticator handle when account login is successful', () => client.login(randomCredentials.locator,
-  //     randomCredentials.secret)
-  //     .should.be.fulfilled()
-  //     .then(() => {
-  //       should(client.registeredClientHandle).not.be.empty();
-  //       should(client.registeredClientHandle).not.be.null();
-  //       should(client.registeredClientHandle).not.be.undefined();
-  //       should(client.registeredClientHandle).be.instanceof(Buffer);
-  //     })
-  //   );
-  //
-  //   it('emit network state as connected when account login is successful', () => (
-  //     new Promise((resolve) => {
-  //       const nwListener = client.setListener(CONST.LISTENER_TYPES.NW_STATE_CHANGE,
-  //         (err, state) => {
-  //           should(err).be.null();
-  //           should(state).not.be.undefined();
-  //           should(state).be.equal(CONST.NETWORK_STATUS.CONNECTED);
-  //           client.removeListener(CONST.LISTENER_TYPES.NW_STATE_CHANGE, nwListener);
-  //           return resolve();
-  //         });
-  //       helper.createRandomAccount();
-  //     }))
-  //   );
-  // });
+
+  describe('login', () => {
+    before(() => helper.createRandomAccount()
+      .then((credential) => (randomCredentials = credential))
+    );
+
+    after(() => helper.clearAccount());
+
+    it('throws an error when account locator is empty', () => client.login()
+      .should.be.rejectedWith(Error)
+      .then((err) => {
+        should(err.message).be.equal(i18n.__('messages.should_not_be_empty', i18n.__('Locator')));
+      })
+    );
+
+    it('throws an error when account secret is empty', () => client.login('test')
+      .should.be.rejectedWith(Error)
+      .then((err) => {
+        should(err.message).be.equal(i18n.__('messages.should_not_be_empty', i18n.__('Secret')));
+      })
+    );
+
+    it('throws an error when account locator is not string', () => client.login(1111, 111)
+      .should.be.rejectedWith(Error)
+      .then((err) => {
+        should(err.message).be.equal(i18n.__('messages.must_be_string', i18n.__('Locator')));
+      })
+    );
+
+    it('throws an error when account secret is not string', () => client.login('test', 111)
+      .should.be.rejectedWith(Error)
+      .then((err) => {
+        should(err.message).be.equal(i18n.__('messages.must_be_string', i18n.__('Secret')));
+      })
+    );
+    //
+    // it('throws an error when account locator is empty string', () => client.login('  ', 'test')
+    //   .should.be.rejectedWith(Error)
+    //   .then((err) => {
+    //     should(err.message).be.equal(i18n.__('messages.should_not_be_empty', i18n.__('Locator')));
+    //   })
+    // );
+    //
+    // it('throws an error when account secret is empty string', () => client.login('test', '  ')
+    //   .should.be.rejectedWith(Error)
+    //   .then((err) => {
+    //     should(err.message).be.equal(i18n.__('messages.should_not_be_empty', i18n.__('Secret')));
+    //   })
+    // );
+    //
+    // it('sets authenticator handle when account login is successful', () => client.login(randomCredentials.locator,
+    //   randomCredentials.secret)
+    //   .should.be.fulfilled()
+    //   .then(() => {
+    //     should(client.registeredClientHandle).not.be.empty();
+    //     should(client.registeredClientHandle).not.be.null();
+    //     should(client.registeredClientHandle).not.be.undefined();
+    //     should(client.registeredClientHandle).be.instanceof(Buffer);
+    //   })
+    // );
+    //
+    // it('emit network state as connected when account login is successful', () => (
+    //   new Promise((resolve) => {
+    //     const nwListener = client.setListener(CONST.LISTENER_TYPES.NW_STATE_CHANGE,
+    //       (err, state) => {
+    //         should(err).be.null();
+    //         should(state).not.be.undefined();
+    //         should(state).be.equal(CONST.NETWORK_STATUS.CONNECTED);
+    //         client.removeListener(CONST.LISTENER_TYPES.NW_STATE_CHANGE, nwListener);
+    //         return resolve();
+    //       });
+    //     helper.createRandomAccount();
+    //   }))
+    // );
+  });
   //
   // describe('decrypt request', () => {
   //   before(() => helper.createRandomAccount());

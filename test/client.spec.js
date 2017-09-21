@@ -197,8 +197,6 @@ describe('Client', () => {
       })
     ));
 
-
-
     console.log('ACTUALLY TEST DONE');
   });
 });

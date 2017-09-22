@@ -86,6 +86,8 @@
     "deps_downloader": "https://s3.eu-west-2.amazonaws.com/deps-downloader/deps_downloader-0.1.0.tgz",
     "enum": "^2.3.0",
     "i18n": "^0.8.3",
+    "jest": "^21.1.0",
+    "jest-codemods": "^0.13.3",
     "lodash": "^4.17.4",
     "opensans-npm-webfont": "0.0.2",
     "react": "^15.4.0",

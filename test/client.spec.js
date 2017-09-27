@@ -125,84 +125,102 @@ describe('Client', () => {
         }))
     );
   });
-  //
-  // describe('login', () => {
-  //   beforeAll(() => helper.createRandomAccount()
-  //     .then((credential) => (randomCredentials = credential)));
-  //
-  //   afterAll(() => helper.clearAccount());
-  //
-  //   test('throws an error when account locator is empty', () => expect(client.login()).rejects.toBe(Error)
-  //     .then((err) => {
-  //       expect(err.message).toBe(i18n.__('messages.should_not_be_empty', i18n.__('Locator')));
-  //     }));
-  //
-  //   test('throws an error when account secret is empty', () => expect(client.login('test')).rejects.toBe(Error)
-  //     .then((err) => {
-  //       expect(err.message).toBe(i18n.__('messages.should_not_be_empty', i18n.__('Secret')));
-  //     }));
-  //
-  //   test(
-  //     'throws an error when account locator is not string',
-  //     () => expect(client.login(1111, 111)).rejects.toBe(Error)
-  //       .then((err) => {
-  //         expect(err.message).toBe(i18n.__('messages.must_be_string', i18n.__('Locator')));
-  //       })
-  //   );
-  //
-  //   test(
-  //     'throws an error when account secret is not string',
-  //     () => expect(client.login('test', 111)).rejects.toBe(Error)
-  //       .then((err) => {
-  //         expect(err.message).toBe(i18n.__('messages.must_be_string', i18n.__('Secret')));
-  //       })
-  //   );
-  //
-  //   test(
-  //     'throws an error when account locator is empty string',
-  //     () => expect(client.login('  ', 'test')).rejects.toBe(Error)
-  //       .then((err) => {
-  //         expect(err.message).toBe(i18n.__('messages.should_not_be_empty', i18n.__('Locator')));
-  //       })
-  //   );
-  //
-  //   test(
-  //     'throws an error when account secret is empty string',
-  //     () => expect(client.login('test', '  ')).rejects.toBe(Error)
-  //       .then((err) => {
-  //         expect(err.message).toBe(i18n.__('messages.should_not_be_empty', i18n.__('Secret')));
-  //       })
-  //   );
-  //
-  //   test(
-  //     'sets authenticator handle when account login is successful',
-  //     () => expect(client.login(randomCredentials.locator,
-  //       randomCredentials.secret)).to.be.fulfilled()
-  //       .then(() => {
-  //         expect(client.registeredClientHandle).not.toHaveLength(0);
-  //         expect(client.registeredClientHandle).not.toBeNull();
-  //         expect(client.registeredClientHandle).toBeDefined();
-  //         expect(client.registeredClientHandle).toBeInstanceOf(Buffer);
-  //       })
-  //   );
-  //
-  //   test(
-  //     'emit network state as connected when account login is successful',
-  //     () => (
-  //       new Promise((resolve) => {
-  //         const nwListener = client.setListener(CONST.LISTENER_TYPES.NW_STATE_CHANGE,
-  //           (err, state) => {
-  //             expect(err).toBeNull();
-  //             expect(state).toBeDefined();
-  //             expect(state).toBe(CONST.NETWORK_STATUS.CONNECTED);
-  //             client.removeListener(CONST.LISTENER_TYPES.NW_STATE_CHANGE, nwListener);
-  //             return resolve();
-  //           });
-  //         helper.createRandomAccount();
-  //       }))
-  //   );
-  // });
-  //
+
+  describe('login', () => {
+    let err, res;
+
+    beforeAll( async () =>
+    {
+      err = null;
+      res = null;
+      randomCredentials = await helper.createRandomAccount()
+    });
+
+    afterAll(() => helper.clearAccount());
+
+    test('throws an error when account locator is empty',
+      async () =>
+      {
+        [err, res] = await to(client.login());
+        expect(err.message).toBe(i18n.__('messages.should_not_be_empty', i18n.__('Locator')));
+
+      });
+
+    test('throws an error when account secret is empty',
+      async () =>
+      {
+        [err, res] = await to(client.login('test'));
+        expect(err.message).toBe(i18n.__('messages.should_not_be_empty', i18n.__('Secret')));
+      });
+
+    test(
+      'throws an error when account locator is not string',
+      async () =>
+      {
+        [err, res] = await to(client.login(1111, 111));
+        expect(err.message).toBe(i18n.__('messages.must_be_string', i18n.__('Locator')));
+      }
+    );
+
+    test(
+      'throws an error when account secret is not string',
+      async () =>
+      {
+        [err, res] = await to(client.login('test', 111));
+        expect(err.message).toBe(i18n.__('messages.must_be_string', i18n.__('Secret')));
+      }
+    );
+
+    test(
+      'throws an error when account locator is empty string',
+      async () =>
+      {
+        [err, res] = await to(client.login('  ', 'test'));
+        expect(err.message).toBe(i18n.__('messages.should_not_be_empty', i18n.__('Locator')));
+      }
+    );
+
+    test(
+      'throws an error when account secret is empty string',
+      async () =>
+      {
+        [err, res] = await to(client.login('test', '  '));
+        expect(err.message).toBe(i18n.__('messages.should_not_be_empty', i18n.__('Secret')));
+      }
+    );
+
+    test(
+      'sets authenticator handle when account login is successful',
+      async () =>
+      {
+        [err, res] = await to(client.login(randomCredentials.locator,
+        randomCredentials.secret))
+
+          expect(res).not.toBeNull();
+          expect(client.registeredClientHandle).not.toHaveLength(0);
+          expect(client.registeredClientHandle).not.toBeNull();
+          expect(client.registeredClientHandle).toBeDefined();
+          expect(client.registeredClientHandle).toBeInstanceOf(Buffer);
+      }
+    );
+    //
+    // test(
+    //   'emit network state as connected when account login is successful',
+    //   () => (
+    //     new Promise((resolve) => {
+    //       const nwListener = client.setListener(CONST.LISTENER_TYPES.NW_STATE_CHANGE,
+    //         (err, state) => {
+    //           expect(err).toBeNull();
+    //           expect(state).toBeDefined();
+    //           expect(state).toBe(CONST.NETWORK_STATUS.CONNECTED);
+    //           client.removeListener(CONST.LISTENER_TYPES.NW_STATE_CHANGE, nwListener);
+    //           return resolve();
+    //         });
+    //       helper.createRandomAccount();
+    //     }))
+    // );
+  });
+
   // describe('decrypt request', () => {
   //   beforeAll(() => helper.createRandomAccount());
   //

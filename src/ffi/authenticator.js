@@ -211,7 +211,7 @@ class Authenticator extends SafeLib {
             return reject(err);
           }
         };
-        console.log("thissss", this.safeLib);
+
         this.safeLib.create_acc.async(
           types.allocCString(locator),
           types.allocCString(secret),

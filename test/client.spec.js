@@ -93,25 +93,21 @@ describe('Client', () => {
       }
     );
 
-    test('sets authenticator handle when account creation is successful', async () => {
-      randomCredentials = helper.getRandomCredentials();
-      expect.assertions(5);
-      console.log('RANDOM CREDS?', randomCredentials);
-      [err, res] = await to(client.createAccount(randomCredentials.locator,
-        randomCredentials.secret, randomCredentials.invite));
+    test(
+      'sets authenticator handle when account creation is successful',
+      async () => {
+        randomCredentials = helper.getRandomCredentials();
+        expect.assertions(5);
 
-      console.log("err", err, res);
-      expect(res).not.toBeNull();
-      expect(client.registeredClientHandle).not.toBeNull();
-      expect(client.registeredClientHandle).not.toHaveLength(0);
-      expect(client.registeredClientHandle).toBeDefined();
-      expect(client.registeredClientHandle).toBeInstanceOf(Buffer);
+        [err, res] = await to(client.createAccount(randomCredentials.locator,
+          randomCredentials.secret, randomCredentials.invite));
 
-      // return expect(client.createAccount(randomCredentials.locator,
-      //   randomCredentials.secret, randomCredentials.invite)).to.be.fulfilled()
-      //   .then(() => {
-      //   });
-    });
+        expect(res).not.toBeNull();
+        expect(client.registeredClientHandle).not.toBeNull();
+        expect(client.registeredClientHandle).not.toHaveLength(0);
+        expect(client.registeredClientHandle).toBeDefined();
+        expect(client.registeredClientHandle).toBeInstanceOf(Buffer);
+      });
 
     test(
       'emit network state as connected when account creation is successful',

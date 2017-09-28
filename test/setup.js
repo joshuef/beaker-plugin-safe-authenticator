@@ -20,4 +20,4 @@ const init = () => {
     .catch(console.error);
 };
 
-init();
+export default init();
